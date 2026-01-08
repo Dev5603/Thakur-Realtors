@@ -1,0 +1,206 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.popup-container {
+  position: relative;
+  background-color: var(--base-450);
+  border-radius: 0.5rem;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--base-300);
+  cursor: pointer;
+  z-index: 10;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.popup-close:hover {
+  color: var(--base-100);
+}
+
+.popup-content {
+  display: flex;
+}
+
+.popup-image {
+  position: relative;
+  flex: 1;
+  min-height: 400px;
+}
+
+.popup-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+}
+
+.popup-image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+}
+
+.popup-image-overlay h3 {
+  color: var(--base-100);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.popup-form-section {
+  flex: 1;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--base-450);
+}
+
+.popup-heading {
+  font-size: 1.5rem;
+  color: var(--base-100);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.popup-title {
+  font-size: 1rem;
+  color: var(--base-300);
+  margin-bottom: 2rem;
+}
+
+.popup-input-group {
+  margin-bottom: 1rem;
+}
+
+.popup-input-group input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--base-400);
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  background-color: var(--base-500);
+  color: var(--base-100);
+  transition: border-color 0.2s ease;
+}
+
+.popup-input-group input:focus {
+  outline: none;
+  border-color: var(--base-200);
+}
+
+.popup-input-group input::placeholder {
+  color: var(--base-300);
+}
+
+.popup-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.popup-checkbox input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  accent-color: var(--base-200);
+  cursor: pointer;
+}
+
+.popup-checkbox label {
+  font-size: 0.75rem;
+  color: var(--base-300);
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.popup-submit {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--base-100);
+  color: var(--base-500);
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.popup-submit:hover {
+  background-color: var(--base-200);
+}
+
+@media (max-width: 768px) {
+  .popup-content {
+    flex-direction: column;
+  }
+
+  .popup-image {
+    min-height: 200px;
+    max-height: 250px;
+  }
+
+  .popup-form-section {
+    padding: 2rem 1.5rem;
+  }
+
+  .popup-title {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+}
