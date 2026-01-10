@@ -145,28 +145,6 @@
   color: var(--base-300);
 }
 
-.popup-checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  margin: 1.5rem 0;
-}
-
-.popup-checkbox input[type="checkbox"] {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-top: 0.125rem;
-  accent-color: var(--base-200);
-  cursor: pointer;
-}
-
-.popup-checkbox label {
-  font-size: 0.75rem;
-  color: var(--base-300);
-  line-height: 1.4;
-  cursor: pointer;
-}
-
 .popup-submit {
   width: 100%;
   padding: 1rem;
@@ -183,6 +161,27 @@
 
 .popup-submit:hover {
   background-color: var(--base-200);
+}
+
+.popup-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.input-error {
+  border-color: #e74c3c !important;
+}
+
+.popup-error {
+  display: block;
+  color: #e74c3c;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.popup-error-submit {
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 @media (max-width: 768px) {

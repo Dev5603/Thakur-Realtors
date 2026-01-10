@@ -1,26 +1,104 @@
 "use client";
 import "./BrochurePopup.css";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-const BrochurePopup = ({ isOpen, onClose, projectName, projectImg }) => {
+const BrochurePopup = ({ isOpen, onClose, projectName, projectImg, brochureUrl }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
   });
   const [agreed, setAgreed] = useState(true);
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+
+  // Regex patterns
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const phoneRegex = /^[6-9]\d{9}$/; // Indian mobile number format
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = "Please enter a valid 10-digit mobile number";
+    }
+
+    if (!agreed) {
+      newErrors.consent = "Please agree to the terms";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Connect to backend
-    console.log("Form submitted:", { ...formData, projectName });
-    // After successful submission, trigger brochure download
-    onClose();
+    
+    if (!validateForm()) return;
+
+    setSubmitting(true);
+
+    try {
+      // Save to Supabase
+      const { error } = await supabase
+        .from("users")
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          mobile: formData.phone,
+          project_name: projectName,
+        }]);
+
+      if (error) throw error;
+
+      // Download brochure if URL exists
+      if (brochureUrl) {
+        try {
+          const response = await fetch(brochureUrl);
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `${projectName}-brochure.pdf`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } catch (downloadError) {
+          window.open(brochureUrl, "_blank");
+        }
+      }
+
+      setFormData({ name: "", email: "", phone: "" });
+      setErrors({});
+      onClose();
+    } catch (err) {
+      setErrors({ submit: err.message || "Something went wrong. Please try again." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -49,8 +127,9 @@ const BrochurePopup = ({ isOpen, onClose, projectName, projectImg }) => {
                   placeholder="Name"
                   value={formData.name}
                   onChange={handleChange}
-                  required
+                  className={errors.name ? "input-error" : ""}
                 />
+                {errors.name && <span className="popup-error">{errors.name}</span>}
               </div>
               <div className="popup-input-group">
                 <input
@@ -59,8 +138,9 @@ const BrochurePopup = ({ isOpen, onClose, projectName, projectImg }) => {
                   placeholder="Email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
+                  className={errors.email ? "input-error" : ""}
                 />
+                {errors.email && <span className="popup-error">{errors.email}</span>}
               </div>
               <div className="popup-input-group">
                 <input
@@ -69,23 +149,14 @@ const BrochurePopup = ({ isOpen, onClose, projectName, projectImg }) => {
                   placeholder="Phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  required
+                  className={errors.phone ? "input-error" : ""}
                 />
+                {errors.phone && <span className="popup-error">{errors.phone}</span>}
               </div>
-              <div className="popup-checkbox">
-                <input
-                  type="checkbox"
-                  id="consent"
-                  checked={agreed}
-                  onChange={(e) => setAgreed(e.target.checked)}
-                  required
-                />
-                <label htmlFor="consent">
-                  I authorize Thakur Realtors to contact me with updates and notifications via Email, SMS, Whatsapp and Call.
-                </label>
-              </div>
-              <button type="submit" className="popup-submit">
-                SUBMIT
+              {errors.consent && <span className="popup-error">{errors.consent}</span>}
+              {errors.submit && <span className="popup-error popup-error-submit">{errors.submit}</span>}
+              <button type="submit" className="popup-submit" disabled={submitting}>
+                {submitting ? "SUBMITTING..." : "SUBMIT"}
               </button>
             </form>
           </div>

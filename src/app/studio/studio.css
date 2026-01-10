@@ -293,3 +293,12 @@
     gap: 1.5rem;
   }
 }
+
+.loading-text,
+.empty-text {
+  color: var(--base-300);
+  font-size: 1rem;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+}

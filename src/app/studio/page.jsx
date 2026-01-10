@@ -1,7 +1,7 @@
 "use client";
 import "./studio.css";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Nav from "@/components/Nav/Nav";
 import ConditionalFooter from "@/components/ConditionalFooter/ConditionalFooter";
 import HowWeWork from "@/components/HowWeWork/HowWeWork";
@@ -9,29 +9,39 @@ import Spotlight from "@/components/Spotlight/Spotlight";
 import CTAWindow from "@/components/CTAWindow/CTAWindow";
 import Copy from "@/components/Copy/Copy";
 import BrochurePopup from "@/components/BrochurePopup/BrochurePopup";
-
-const ongoingProjects = [
-  { name: "THAKUR EMERALD", location: "KHARGHAR", img: "/spotlight/spotlight-img-1.jpg" },
-  { name: "THAKUR NEELKAMAL", location: "DOMBIVLI", img: "/spotlight/spotlight-img-2.jpg" },
-  { name: "ERAVATT", location: "UPPER KHARGHAR", img: "/spotlight/spotlight-img-3.png" },
-];
-
-const deliveredProjects = [
-  { name: "SUKH SAGAR", location: "KHARGHAR", img: "/spotlight/spotlight-img-4.png" },
-  { name: "THAKUR RESIDENCY", location: "KALYAN NX", img: "/spotlight/spotlight-img-5.png" },
-  { name: "THAKUR HERITAGE", location: "PANVEL", img: "/spotlight/spotlight-img-6.png" },
-  { name: "THAKUR PARADISE", location: "KHARGHAR", img: "/spotlight/spotlight-img-7.png", badge: "Ready Possession" },
-  { name: "KSHIR SAGAR", location: "KHARGHAR", img: "/spotlight/spotlight-img-8.png", badge: "Ready Possession" },
-  { name: "SAI SAGAR", location: "LONAVALA", img: "/spotlight/spotlight-img-9.png", badge: "Ready Possession" },
-  { name: "THAKUR SKYVILLA", location: "KHARGHAR", img: "/spotlight/spotlight-img-10.jpeg" },
-  { name: "THAKUR DEEPRAJ", location: "DOMBIVLI", img: "/spotlight/spotlight-img-11.jpeg" },
-  { name: "THAKUR GALAXY", location: "PANVEL", img: "/spotlight/spotlight-img-12.jpeg" },
-  { name: "THAKUR PATIO", location: "KALYAN", img: "/spotlight/spotlight-img-13.jpeg" },
-];
+import { supabase } from "@/lib/supabase";
 
 const page = () => {
   const [popupOpen, setPopupOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [ongoingProjects, setOngoingProjects] = useState([]);
+  const [deliveredProjects, setDeliveredProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    setLoading(true);
+    
+    const { data: ongoing, error: ongoingError } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("status", true)
+      .order("created_at", { ascending: false });
+
+    const { data: delivered, error: deliveredError } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("status", false)
+      .order("created_at", { ascending: false });
+
+    if (!ongoingError) setOngoingProjects(ongoing || []);
+    if (!deliveredError) setDeliveredProjects(delivered || []);
+    
+    setLoading(false);
+  };
 
   const scrollToSection = (id) => {
     const element = document.getElementById(id);
@@ -147,17 +157,23 @@ const page = () => {
               </div>
             </div>
             <div className="projects-grid">
-              {ongoingProjects.map((project, index) => (
-                <div key={index} className="project-card" onClick={() => handleCardClick(project)}>
-                  <div className="project-card-img">
-                    <img src={project.img} alt={project.name} />
+              {loading ? (
+                <p className="loading-text">Loading projects...</p>
+              ) : ongoingProjects.length === 0 ? (
+                <p className="empty-text">No ongoing projects found.</p>
+              ) : (
+                ongoingProjects.map((project) => (
+                  <div key={project.id} className="project-card" onClick={() => handleCardClick(project)}>
+                    <div className="project-card-img">
+                      <img src={project.image_url} alt={project.name} />
+                    </div>
+                    <div className="project-card-info">
+                      <h3>{project.name}</h3>
+                      <p>{project.location}</p>
+                    </div>
                   </div>
-                  <div className="project-card-info">
-                    <h3>{project.name}</h3>
-                    <p>{project.location}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -175,18 +191,23 @@ const page = () => {
               </div>
             </div>
             <div className="projects-grid">
-              {deliveredProjects.map((project, index) => (
-                <div key={index} className="project-card project-card-static">
-                  <div className="project-card-img">
-                    <img src={project.img} alt={project.name} />
-                    {project.badge && <span className="project-badge">{project.badge}</span>}
+              {loading ? (
+                <p className="loading-text">Loading projects...</p>
+              ) : deliveredProjects.length === 0 ? (
+                <p className="empty-text">No delivered projects found.</p>
+              ) : (
+                deliveredProjects.map((project) => (
+                  <div key={project.id} className="project-card project-card-static">
+                    <div className="project-card-img">
+                      <img src={project.image_url} alt={project.name} />
+                    </div>
+                    <div className="project-card-info">
+                      <h3>{project.name}</h3>
+                      <p>{project.location}</p>
+                    </div>
                   </div>
-                  <div className="project-card-info">
-                    <h3>{project.name}</h3>
-                    <p>{project.location}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         </section>
@@ -197,14 +218,14 @@ const page = () => {
           callout="Designs that speak through form"
           description="Each project tells a story material, and rhythm. Explore how ideas take shape and grow into lasting environments."
         />
-        <Spotlight />
       </div>
       <ConditionalFooter />
       <BrochurePopup
         isOpen={popupOpen}
         onClose={handleClosePopup}
         projectName={selectedProject?.name}
-        projectImg={selectedProject?.img}
+        projectImg={selectedProject?.image_url}
+        brochureUrl={selectedProject?.brochure_url}
       />
     </>
   );
