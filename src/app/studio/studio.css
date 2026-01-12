@@ -294,6 +294,16 @@
   }
 }
 
+@media (max-width: 768px) {
+  .project-nav {
+    padding-top: 10rem;
+  }
+
+  .project-nav-link {
+    font-size: 1.25rem;
+  }
+}
+
 .loading-text,
 .empty-text {
   color: var(--base-300);

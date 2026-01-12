@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import Nav from "@/components/Nav/Nav";
 import ConditionalFooter from "@/components/ConditionalFooter/ConditionalFooter";
 import HowWeWork from "@/components/HowWeWork/HowWeWork";
-import Spotlight from "@/components/Spotlight/Spotlight";
 import CTAWindow from "@/components/CTAWindow/CTAWindow";
 import Copy from "@/components/Copy/Copy";
 import BrochurePopup from "@/components/BrochurePopup/BrochurePopup";
