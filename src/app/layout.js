@@ -9,6 +9,17 @@ import TopBar from "@/components/TopBar/TopBar";
 export const metadata = {
   title: "Thakur Realtors",
   description: "Leading Real Estate Solutions for Your Dream Home",
+  openGraph: {
+    title: "Thakur Realtors",
+    description: "Leading Real Estate Solutions for Your Dream Home",
+    images: ["/logos/dark-logo.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Thakur Realtors",
+    description: "Leading Real Estate Solutions for Your Dream Home",
+    images: ["/logos/dark-logo.png"],
+  },
 };
 
 export default function RootLayout({ children }) {
